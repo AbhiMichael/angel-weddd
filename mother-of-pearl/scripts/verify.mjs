@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import { readFile, stat } from 'node:fs/promises';
+import { resolve } from 'node:path';
+const root = resolve(import.meta.dirname, '..');
+const js = await readFile(resolve(root, 'dist/assets/index-C7F6jN74.js'), 'utf8');
+const css = await readFile(resolve(root, 'dist/assets/index-fCyDNC2C.css'), 'utf8');
+const fonts = await readFile(resolve(root, 'dist/assets/google-fonts.css'), 'utf8');
+const html = await readFile(resolve(root, 'dist/index.html'), 'utf8');
+const assets = [...new Set((js + css + fonts + html).match(/\/(?:__l5e\/assets-v1|assets)\/[\w./-]+\.(?:png|jpe?g|webp|svg|woff2?|ttf|mp3|mp4|webm|ico|css|js)/g))];
+for (const path of assets) assert((await stat(resolve(root, 'dist' + path))).size > 0, `Empty asset: ${path}`);
+assert(!js.includes('https://kgiystryyzikemyfnafi.supabase.co'), 'Original private backend must not receive clone submissions');
+assert(!html.includes('/~flock.js'), 'Original analytics should not run in the clone');
+assert(!fonts.includes('fonts.gstatic.com'), 'Fonts must be local');
+for (const text of ['Cornelia', 'James', 'Villa Aurelia', 'Transportation', 'Where to Stay', 'Wedding Gift', 'RSVP']) assert(js.includes(text), `Missing content: ${text}`);
+const manifest = JSON.parse(await readFile(resolve(root, '.openai/hosting.json')));
+assert(manifest.project_id && manifest.static.directory === 'dist');
+console.log(`Verified ${assets.length} local asset references, invitation content, and deployment manifest.`);

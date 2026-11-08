@@ -1,0 +1,9 @@
+{
+  "name": "wed2",
+  "private": true,
+  "scripts": {
+    "dev": "node mother-of-pearl/scripts/serve.mjs",
+    "start": "node mother-of-pearl/scripts/serve.mjs",
+    "check": "node mother-of-pearl/scripts/verify.mjs"
+  }
+}
